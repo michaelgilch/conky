@@ -29,14 +29,38 @@ printf "${color1}Installed: ${goto 125}${color2}%s ${alignr}${color1}Updates: ${
 printf "${color1}Cache Size: ${goto 125}${color2}%s\n", cache_size
 printf "${color0}Available Updates: ${color1}\n"
 
+packages_core = []
+packages_extra = []
+packages_community = []
+packages_multilib = []
+
 if update_count > 0
     packages.each do |name, old_vers, arrow, new_vers|
         info = `pacman -Si #{name}`
         repo = info.match(/Repository.*:\s(.*)$/)[1]
         repo = '[' + repo + ']'
-        printf "${color1}%-11s ${color2}%-20s ${color3}%-15s ${color2}-> %s\n", \
-                repo, name, old_vers, new_vers
+        if repo == '[core]'
+            packages_core.push([repo, name, old_vers, new_vers])
+        elsif repo == '[extra]'
+            packages_extra.push([repo, name, old_vers, new_vers])
+        elsif repo == '[community]'
+            packages_community.push([repo, name, old_vers, new_vers])
+        elsif repo == '[multilib]'
+            packages_multilib.push([repo, name, old_vers, new_vers])
+        end
+    end
+    packages_core.each do |repo, name, old_vers, new_vers| 
+      printf "${color1}%-11s ${color2}%-20s ${color3}%-15s ${color2}-> %s\n", repo, name, old_vers, new_vers
+    end
+    packages_extra.each do |repo, name, old_vers, new_vers| 
+      printf "${color1}%-11s ${color2}%-20s ${color3}%-15s ${color2}-> %s\n", repo, name, old_vers, new_vers
+    end
+    packages_community.each do |repo, name, old_vers, new_vers|
+      printf "${color1}%-11s ${color2}%-20s ${color3}%-15s ${color2}-> %s\n", repo, name, old_vers, new_vers
+    end
+    packages_multilib.each do |repo, name, old_vers, new_vers| 
+      printf "${color1}%-11s ${color2}%-20s ${color3}%-15s ${color2}-> %s\n", repo, name, old_vers, new_vers
     end
 else
-    puts "N/A"
+  puts "N/A"
 end
