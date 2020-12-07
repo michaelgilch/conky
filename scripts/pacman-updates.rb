@@ -34,8 +34,21 @@ packages_extra = []
 packages_community = []
 packages_multilib = []
 
+max_name_length = 0
+max_old_vers_length = 0
+max_new_vers_length = 0
+
 if update_count > 0
     packages.each do |name, old_vers, arrow, new_vers|
+        if name.length > max_name_length
+            max_name_length = name.length
+        end
+        if old_vers.length > max_old_vers_length
+            max_old_vers_length = old_vers.length
+        end
+        if new_vers.length > max_new_vers_length
+            max_new_vers_length = new_vers.length
+        end
         info = `pacman -Si #{name}`
         repo = info.match(/Repository.*:\s(.*)$/)[1]
         repo = '[' + repo + ']'
@@ -50,16 +63,16 @@ if update_count > 0
         end
     end
     packages_core.each do |repo, name, old_vers, new_vers| 
-      printf "${color1}%-11s ${color2}%-20s ${color3}%-15s ${color2}-> %s\n", repo, name, old_vers, new_vers
+      printf "${color1}%-11s ${color2}%-#{max_name_length}s  ${color3}%-#{max_old_vers_length}s  ${color2}=>  ${color3}%-#{max_new_vers_length}s\n", repo, name, old_vers, new_vers
     end
     packages_extra.each do |repo, name, old_vers, new_vers| 
-      printf "${color1}%-11s ${color2}%-20s ${color3}%-15s ${color2}-> %s\n", repo, name, old_vers, new_vers
+      printf "${color1}%-11s ${color2}%-#{max_name_length}s  ${color3}%-#{max_old_vers_length}s  ${color2}=>  ${color3}%-#{max_new_vers_length}s\n", repo, name, old_vers, new_vers
     end
     packages_community.each do |repo, name, old_vers, new_vers|
-      printf "${color1}%-11s ${color2}%-20s ${color3}%-15s ${color2}-> %s\n", repo, name, old_vers, new_vers
+      printf "${color1}%-11s ${color2}%-#{max_name_length}s  ${color3}%-#{max_old_vers_length}s  ${color2}=>  ${color3}%-#{max_new_vers_length}s\n", repo, name, old_vers, new_vers
     end
     packages_multilib.each do |repo, name, old_vers, new_vers| 
-      printf "${color1}%-11s ${color2}%-20s ${color3}%-15s ${color2}-> %s\n", repo, name, old_vers, new_vers
+      printf "${color1}%-11s ${color2}%-#{max_name_length}s  ${color3}%-#{max_old_vers_length}s  ${color2}=>  ${color3}%-#{max_new_vers_length}s\n", repo, name, old_vers, new_vers
     end
 else
   puts "N/A"
