@@ -2,5 +2,5 @@
 # 
 # Setup Conky Scripts
 
-ln -s ~/dev/github/conky ~/.config/conky
+ln -s ~/.conky ~/.config/conky
 
