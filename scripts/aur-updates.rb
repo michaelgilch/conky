@@ -39,10 +39,10 @@ end
 num_dev_packages = dev_packages.lines.count
 
 aur_info = AUR_QUERY_ADDRESS + local_packages.map { |package|
-	URI.escape(package.name)
+	URI.encode_www_form_component(package.name)
 }.join("&arg[]=")
 
-json_results = JSON.parse(open(aur_info).read)
+json_results = JSON.parse(URI.open(aur_info).read)
 
 available_updates = ""
 
