@@ -36,7 +36,8 @@ block_devices = []
 mounted_devices.each do |device|
     fs, _type, _size, _used, _avail, _percent, mount = device.split
 
-    if mount.start_with?('/media/')
+    if mount.start_with?('/run/media/')
+        device.slice! "/run/media/michael/"
         removable_devices += make_partition_line(device)
     else
         block = fs[5..7]
