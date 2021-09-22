@@ -26,7 +26,7 @@ def display_cores(num_processors)
     num_lines = num_processors / 2
     for i in 1..num_lines
         puts "${color1}Core #{i}:  ${color2}${cpu cpu#{i}}%   ${goto 90}${color6}${cpubar cpu#{i} 10,50}" \
-             "${goto 165}${color1}Core #{i + num_lines}:  ${color2}${cpu cpu#{i + num_lines}}%   ${alignr}${color6}${cpubar cpu#{i + num_lines} 10,50}"
+             "${goto 165}${color1}Core #{i + num_lines}:  ${color2}${cpu cpu#{i + num_lines}}%   ${goto 250}${color6}${cpubar cpu#{i + num_lines} 10,50}"
     end
 end
 
