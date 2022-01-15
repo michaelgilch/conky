@@ -8,7 +8,7 @@
 
 require 'date'
 
-# Globals to hold results for each journal entry
+# The following globals hold the results of each journal entry
 $formatted_date
 $formatted_time
 $priority
@@ -19,7 +19,7 @@ $message
 $source
 $formatted_message
 
-# List of final journal entries ready for display
+# The final output to be displayed
 $formatted_output = ""
 
 def set_entry_defaults()
@@ -85,32 +85,36 @@ def format_message()
     end
 end
 
-
 journalctl = 'journalctl --boot'
 priorityArg = '--priority=7'
 numLines = '--lines=30'
-output = '--output=verbose' # Needed for color-coding
+output = '--output=verbose' # Need PRIORITY for color-coding
 fields = '--output-fields=_COMM,SYSLOG_IDENTIFIER,PRIORITY,_PID,MESSAGE'
+# journalctl -b -p7 -n10 -overbose --output-fields=_COMM,SYSLOG_IDENTIFIER,PRIORITY,_PID,MESSAGE
 rawVerboseOutput = `#{journalctl} #{priorityArg} #{numLines} #{output} #{fields}`.split("\n").to_a
 
 # Default Values:
 set_entry_defaults()
 
+# Loop through each line of the raw output (sample entry below), to fetch each individual
+# component. Do not add anything to the formatted output until we reach the start of the
+# next entry block to make sure we have captured all of the components.
+# Sample:
+# Fri 2022-01-14 20:46:42.224110 EST [s=060abe11b5924a50b4d803469c5 ...
+#   PRIORITY=6
+#   SYSLOG_IDENTIFIER=pacman-db-sync.sh
+#   MESSAGE=:: Synchronizing package databases...
+#   _COMM=pacman
+#   _PID=3569275
+# Fri 2022-01-14 20:46:43.934000 EST [s=060abe11b5924a50b4d803469c5 ...
+#   SYSLOG_IDENTIFIER=audit
+#   _PID=1
+#   MESSAGE=SERVICE_STOP pid=1 uid=0 auid=4294967295 ses=4294967295 ...
 num_msg_lines = 0
-
 rawVerboseOutput.each do |rawLine|
-    # Sample:
-    # Fri 2022-01-14 20:46:42.224110 EST [s=060abe11b5924a50b4d803469c5814c5;i=2d8a;b=500a9e569cfd41ebba0f8ba5db7ef3d7;m=660f1afb42;t=5d595>
-    #   PRIORITY=6
-    #   SYSLOG_IDENTIFIER=pacman-db-sync.sh
-    #   MESSAGE=:: Synchronizing package databases...
-    #   _COMM=pacman
-    #   _PID=3569275
-    
     # If the line begins with something other than a space ' ' character, which should alway
     # be the day of the week part of the date/time stamp, we know its the start of a log block.
     if rawLine[0] != " "
-
         num_msg_lines = num_msg_lines + 1
         if num_msg_lines > 1
             format_message()
@@ -120,14 +124,12 @@ rawVerboseOutput.each do |rawLine|
         # Reset all values for next message
         set_entry_defaults()
 
-        # Begin gathering new data. 
         # Since this is a starting line of a log block, grab the date and time.
         entryDate = rawLine.split()[1]
         entryTime = rawLine.split()[2]
 
         $formatted_date = Date.parse(entryDate).strftime("%d %b")
         $formatted_time = entryTime[0..11]
-        
     else
         infoLine = rawLine.split("=")
 
