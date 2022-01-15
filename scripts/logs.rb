@@ -8,6 +8,84 @@
 
 require 'date'
 
+# Globals to hold results for each journal entry
+$formatted_date
+$formatted_time
+$priority
+$syslog_id
+$comm
+$pid
+$message
+$source
+$formatted_message
+
+# List of final journal entries ready for display
+$formatted_output = ""
+
+def set_entry_defaults()
+    $formatted_date = ""
+    $formatted_time = ""
+    $priority = "7" # 7 is used for journal entries that do not have a priority listed
+    $syslog_id = ""
+    $comm = ""
+    $pid = ""
+    $message = ""
+    $source = ""
+    $formatted_message = ""
+end
+
+def add_to_formatted_output()
+    if $syslog_id == ""
+        $source = "${color0}" + $comm
+    else
+        $source = "${color0}" + $syslog_id
+    end
+
+    if $pid != ""
+        $source += "[" + $pid + "]: "
+    else
+        $source += ": "
+    end
+
+    $formatted_output += "${color6}" + $formatted_date + " "
+    $formatted_output += "${color6}" + $formatted_time + " "   
+    #$formatted_output += $priority + " "
+    $formatted_output += $source 
+    $formatted_output += $formatted_message
+end
+
+def format_message()
+
+    if $priority.to_i <= 3                   # red = emerg, alert, crit, error
+        color = "${color4}"
+    elsif $priority.to_i == 4                # yellow = warning
+        color = "${color3}"
+    elsif $priority.to_i == 5                # grey = notice
+        color = "${color1}"
+    elsif $priority.to_i == 6                # white = info
+        color = "${color0}"
+    else                                    # blue = debug
+        color = "${color2}"
+    end
+
+    # Wrap long messages
+    if $message.length > 100
+        lineNum = 0
+        messageArr = $message.scan(/.{1,101}/)
+        messageArr.each do |msgChunk|
+            lineNum = lineNum + 1
+            if lineNum == 1
+                $formatted_message = color + msgChunk + "\n"
+            else
+                $formatted_message += color + "                    " + msgChunk + "\n"
+            end
+        end
+    else
+        $formatted_message = color + $message + "\n"
+    end
+end
+
+
 journalctl = 'journalctl --boot'
 priorityArg = '--priority=7'
 numLines = '--lines=30'
@@ -16,123 +94,61 @@ fields = '--output-fields=_COMM,SYSLOG_IDENTIFIER,PRIORITY,_PID,MESSAGE'
 rawVerboseOutput = `#{journalctl} #{priorityArg} #{numLines} #{output} #{fields}`.split("\n").to_a
 
 # Default Values:
-formattedDate = ""
-formattedTime = ""
-priority = "7" 
-identifier = ""
-comm = ""
-message = ""
-pid = ""
-entryTime = ""
-numMsgLines = 0
-msgGroup = ""
-msgLines = ""
-formattedOutput = ""
+set_entry_defaults()
 
-# Sample:
-# Wed 2022-01-12 19:28:45.330121 EST [s=060abe11b5924a50b4d803469c5814c5;i=2a99;b=500a9e569cfd41ebba0f8ba5db7ef3d7;m=3cbca87e1d;t=5d56bc4e852c9;x=ccf1bcfe94a82e94]
-#    _TRANSPORT=kernel
-#    PRIORITY=6
-#    SYSLOG_IDENTIFIER=kernel
-#    MESSAGE=input: SONiX USB Keyboard as /devices/pci0000:00/0000:00:14.0/usb3/3-10/3-10:1.0/0003:0C45:7681.000C/input/input43
-#Wed 2022-01-12 19:28:45.386763 EST [s=060abe11b5924a50b4d803469c5814c5;i=2a9a;b=500a9e569cfd41ebba0f8ba5db7ef3d7;m=3cbca95b5f;t=5d56bc4e9300b;x=ad0f5ab873aa43e1]
-#    _TRANSPORT=kernel
-#    PRIORITY=6
-#    SYSLOG_IDENTIFIER=kernel
-#    MESSAGE=hid-generic 0003:0C45:7681.000C: input,hidraw3: USB HID v1.11 Keyboard [SONiX USB Keyboard] on usb-0000:00:14.0-10/input0
-#Wed 2022-01-12 19:28:45.386958 EST [s=060abe11b5924a50b4d803469c5814c5;i=2a9b;b=500a9e569cfd41ebba0f8ba5db7ef3d7;m=3cbca95c22;t=5d56bc4e930ce;x=39b7875c94ddfe07]
-#    _TRANSPORT=kernel
-#    PRIORITY=6
-#    SYSLOG_IDENTIFIER=kernel
-#    MESSAGE=input: SONiX USB Keyboard Consumer Control as /devices/pci0000:00/0000:00:14.0/usb3/3-10/3-10:1.1/0003:0C45:7681.000D/input/input44
+num_msg_lines = 0
+
 rawVerboseOutput.each do |rawLine|
+    # Sample:
+    # Fri 2022-01-14 20:46:42.224110 EST [s=060abe11b5924a50b4d803469c5814c5;i=2d8a;b=500a9e569cfd41ebba0f8ba5db7ef3d7;m=660f1afb42;t=5d595>
+    #   PRIORITY=6
+    #   SYSLOG_IDENTIFIER=pacman-db-sync.sh
+    #   MESSAGE=:: Synchronizing package databases...
+    #   _COMM=pacman
+    #   _PID=3569275
     
-    # If the line begins with something other than a space ' ' character, 
-    # we know its the start of a log block
+    # If the line begins with something other than a space ' ' character, which should alway
+    # be the day of the week part of the date/time stamp, we know its the start of a log block.
     if rawLine[0] != " "
-        numMsgLines = numMsgLines + 1
 
-        if numMsgLines > 1
-            formattedOutput += "${color6}" + formattedDate + " "
-            formattedOutput += "${color6}" + formattedTime + " "   
-            formattedOutput += msgGroup 
-            formattedOutput += msgLines
+        num_msg_lines = num_msg_lines + 1
+        if num_msg_lines > 1
+            format_message()
+            add_to_formatted_output()
         end
 
         # Reset all values for next message
-        formattedDate = ""
-        formattedTime = ""
-        priority = "7"
-        identifier = ""
-        comm = ""
-        message = ""
-        pid = ""
+        set_entry_defaults()
 
         # Begin gathering new data. 
         # Since this is a starting line of a log block, grab the date and time.
         entryDate = rawLine.split()[1]
         entryTime = rawLine.split()[2]
 
-        formattedDate = Date.parse(entryDate).strftime("%d %b")
-        formattedTime = entryTime[0..11]
+        $formatted_date = Date.parse(entryDate).strftime("%d %b")
+        $formatted_time = entryTime[0..11]
         
     else
         infoLine = rawLine.split("=")
 
         if infoLine[0] == "    PRIORITY"
-            priority = infoLine[1]
+            $priority = infoLine[1]
         elsif infoLine[0] == "    SYSLOG_IDENTIFIER"
-            identifier = infoLine[1] + ": "
+            $syslog_id = infoLine[1]
         elsif infoLine[0] == "    _COMM"
-            comm = infoLine[1]
+            $comm = infoLine[1]
         elsif infoLine[0] == "    _PID"
-            pid = infoLine[1]
+            $pid = infoLine[1]
         elsif infoLine[0] == "    MESSAGE"
-            message = rawLine[12..]
-            if priority.to_i <= 3                   # red = emerg, alert, crit, error
-                color = "${color4}"
-            elsif priority.to_i == 4                # yellow = warning
-                color = "${color3}"
-            elsif priority.to_i == 5                # grey = notice
-                color = "${color1}"
-            elsif priority.to_i == 6                # white = info
-                color = "${color0}"
-            else                                    # blue = debug
-                color = "${color2}"
-            end
-
-            if identifier == ""
-                msgGroup = "${color0}" + comm + "[" + pid + "]: "
-            else
-                msgGroup = "${color0}" + identifier
-            end
-
-            # Wrap long messages
-            if message.length > 100
-                lineNum = 0
-                messageArr = message.scan(/.{1,101}/)
-                messageArr.each do |msgChunk|
-                    lineNum = lineNum + 1
-                    if lineNum == 1
-                        msgLines = color + msgChunk + "\n"
-                    else
-                        msgLines += color + "                    " + msgChunk + "\n"
-                    end
-                end
-            else
-                msgLines = color + message + "\n"
-            end
+            $message = rawLine[12..]
         end  
     end
 end
 
-# add the last entry to the message queue
-formattedOutput += "${color6}" + formattedDate + " "
-formattedOutput += "${color6}" + entryTime[0..11] + " "   
-formattedOutput += msgGroup 
-formattedOutput += msgLines
+# Add the last entry to the message queue
+format_message()
+add_to_formatted_output()
 
 printf "${color0}Journal Logs  ${hr}\n"
 puts ""
-puts formattedOutput
-
+puts $formatted_output
