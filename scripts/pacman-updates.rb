@@ -63,16 +63,16 @@ if update_count > 0
         end
     end
     packages_core.each do |repo, name, old_vers, new_vers| 
-      printf "${color1}%-11s ${color2}%-#{max_name_length}s  ${color3}%-#{max_old_vers_length}s  ${color2}=>  ${color3}%-#{max_new_vers_length}s\n", repo, name, old_vers, new_vers
+      printf "${color1}%-11s ${color2}%-#{max_name_length}s  ${color3}%-#{max_old_vers_length}s  ${color1}=>  ${color3}%-#{max_new_vers_length}s\n", repo, name, old_vers, new_vers
     end
     packages_extra.each do |repo, name, old_vers, new_vers| 
-      printf "${color1}%-11s ${color2}%-#{max_name_length}s  ${color3}%-#{max_old_vers_length}s  ${color2}=>  ${color3}%-#{max_new_vers_length}s\n", repo, name, old_vers, new_vers
+      printf "${color1}%-11s ${color2}%-#{max_name_length}s  ${color3}%-#{max_old_vers_length}s  ${color1}=>  ${color3}%-#{max_new_vers_length}s\n", repo, name, old_vers, new_vers
     end
     packages_community.each do |repo, name, old_vers, new_vers|
-      printf "${color1}%-11s ${color2}%-#{max_name_length}s  ${color3}%-#{max_old_vers_length}s  ${color2}=>  ${color3}%-#{max_new_vers_length}s\n", repo, name, old_vers, new_vers
+      printf "${color1}%-11s ${color2}%-#{max_name_length}s  ${color3}%-#{max_old_vers_length}s  ${color1}=>  ${color3}%-#{max_new_vers_length}s\n", repo, name, old_vers, new_vers
     end
     packages_multilib.each do |repo, name, old_vers, new_vers| 
-      printf "${color1}%-11s ${color2}%-#{max_name_length}s  ${color3}%-#{max_old_vers_length}s  ${color2}=>  ${color3}%-#{max_new_vers_length}s\n", repo, name, old_vers, new_vers
+      printf "${color1}%-11s ${color2}%-#{max_name_length}s  ${color3}%-#{max_old_vers_length}s  ${color1}=>  ${color3}%-#{max_new_vers_length}s\n", repo, name, old_vers, new_vers
     end
 else
   puts "N/A"
