@@ -115,22 +115,26 @@ rawVerboseOutput.each do |rawLine|
     # If the line begins with something other than a space ' ' character, which should alway
     # be the day of the week part of the date/time stamp, we know its the start of a log block.
     if rawLine[0] != " "
+
+        # Skip adding previously gathered attributes to the formatted output if this
+        # is the first line of output, since nothing would have been gathered yet.
         num_msg_lines = num_msg_lines + 1
         if num_msg_lines > 1
             format_message()
             add_to_formatted_output()
         end
 
-        # Reset all values for next message
+        # Reset all values for the next message
         set_entry_defaults()
 
-        # Since this is a starting line of a log block, grab the date and time.
+        # Since this is the first line of an entry, grab the date and time.
         entryDate = rawLine.split()[1]
-        entryTime = rawLine.split()[2]
-
         $formatted_date = Date.parse(entryDate).strftime("%d %b")
+
+        entryTime = rawLine.split()[2]
         $formatted_time = entryTime[0..11]
-    else
+    else 
+        # Non-leading lines
         infoLine = rawLine.split("=")
 
         if infoLine[0] == "    PRIORITY"
