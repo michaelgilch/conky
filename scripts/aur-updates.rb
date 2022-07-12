@@ -10,7 +10,7 @@
 require "open-uri"
 require "json"
 
-AUR_QUERY_ADDRESS = "https://aur.archlinux.org/rpc.php?type=multiinfo&arg[]="
+AUR_QUERY_ADDRESS = "https://aur.archlinux.org/rpc.php?v=5&type=multiinfo&arg[]="
 
 class Package
 	attr_reader :name, :version
@@ -28,6 +28,7 @@ local_packages = local_package_query_results.split("\n").map(&:split).map { |pac
 	name, version = package
 	Package.new(name, version)
 }
+
 dev_packages = ""
 local_packages.delete_if do |package|
 	if package.name.end_with? "-git","-svn","-cvs","-hg","-bzr","-darcs", "-dev"
