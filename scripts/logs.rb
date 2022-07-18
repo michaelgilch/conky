@@ -89,7 +89,7 @@ end
 
 journalctl = 'journalctl --boot'
 priorityArg = '--priority=7'
-numLines = '--lines=30'
+numLines = '--lines=50'
 output = '--output=verbose' # Need PRIORITY for color-coding
 fields = '--output-fields=_COMM,SYSLOG_IDENTIFIER,PRIORITY,_PID,MESSAGE'
 # journalctl -b -p7 -n10 -overbose --output-fields=_COMM,SYSLOG_IDENTIFIER,PRIORITY,_PID,MESSAGE
