@@ -35,6 +35,14 @@ def set_entry_defaults()
 end
 
 def add_to_formatted_output()
+    $formatted_output += "${color6}" + $formatted_date + " "
+    $formatted_output += "${color6}" + $formatted_time + " "   
+    # $formatted_output += $priority + " "
+    $formatted_output += $source 
+    $formatted_output += $formatted_message
+end
+
+def format_message()
     if $syslog_id == ""
         $source = "${color0}" + $comm
     else
@@ -46,15 +54,6 @@ def add_to_formatted_output()
     else
         $source += ": "
     end
-
-    $formatted_output += "${color6}" + $formatted_date + " "
-    $formatted_output += "${color6}" + $formatted_time + " "   
-    #$formatted_output += $priority + " "
-    $formatted_output += $source 
-    $formatted_output += $formatted_message
-end
-
-def format_message()
 
     if $priority.to_i <= 3                   # red = emerg, alert, crit, error
         color = "${color4}"
@@ -68,21 +67,24 @@ def format_message()
         color = "${color2}"
     end
 
-    # Wrap long messages
-    if $message.length > 100
-        lineNum = 0
-        messageArr = $message.scan(/.{1,101}/)
-        messageArr.each do |msgChunk|
-            lineNum = lineNum + 1
-            if lineNum == 1
-                $formatted_message = color + msgChunk + "\n"
-            else
-                $formatted_message += color + "                    " + msgChunk + "\n"
-            end
+    # Determine length of line so far.
+    # First line of a message = length of date/time + length of source
+    # Subsequent lines of the same message = length of date/time (for placeholder)
+    lineLength = 20 + $source.length
+
+    messageArr = $message.split(' ')
+
+    $formatted_message += color
+    messageArr.each do | word |
+        if lineLength + word.length > 196
+            $formatted_message += "\n                    " + word + ' '
+            lineLength = 20
+        else
+            $formatted_message += word + ' '
         end
-    else
-        $formatted_message = color + $message + "\n"
+        lineLength += word.length
     end
+    $formatted_message += "\n"
 end
 
 journalctl = 'journalctl --boot'
@@ -155,6 +157,5 @@ end
 format_message()
 add_to_formatted_output()
 
-printf "${color0}Journal Logs  ${hr}\n"
 puts ""
 puts $formatted_output
