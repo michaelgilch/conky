@@ -1,79 +1,73 @@
 #!/usr/bin/ruby
-
+#
 # pacman-updates.rb
 # Helper script for Conky to check and list pacman updates (native packages only).
 #
 # Assumptions:
-#	- pacman database is up-to-date via `pacman -Sy`
+#	  - `pacman-contrib` package is installed, which provides `checkupdates`
 #
-# Michael Gilchrist (michaelgilch@gmail.com)
+# Author: Michael Gilchrist (michaelgilch@gmail.com)
 
-update_results = `pacman -Qu`
-packages = []
-update_count = 0
-update_info = ''
+# Fetch number of installed packages and pacman cache size
+num_installed = `pacman -Qn | wc -l`.strip
+cache_size = `du -sh /var/cache/pacman/pkg | cut -f1`.strip
 
-packages = update_results.split("\n")
+# Fetch the pending updates and count
+update_results = `checkupdates`
+packages = update_results.lines.map { |line| line.split }
+update_count = packages.size 
 
-# separate package name and version
-packages.map! { |p| p.split }
-
-update_count = packages.count
-
-num_installed = `pacman -Qn | wc -l`
-cache_size = `du -h /var/cache/pacman/pkg | cut -f1`
-
-printf "${color0}Pacman  ${hr}\n"
-printf "${color1}Installed: ${goto 125}${color2}%s ${alignr}${color1}Updates: ${color2}%s\n", \
-       num_installed.delete!("\n"), update_count
-printf "${color1}Cache Size: ${goto 125}${color2}%s\n", cache_size
-printf "${color0}Available Updates: ${color1}\n"
-
-packages_core = []
-packages_extra = []
-packages_community = []
-packages_multilib = []
-
-max_name_length = 0
-max_old_vers_length = 0
-max_new_vers_length = 0
+# Display the Pacman header info
+puts "${color0}Pacman  ${hr}"
+puts "${color1}Installed: ${goto 125}${color2}#{num_installed} ${alignr}${color1}Updates: ${color2}#{update_count}"
+puts "${color1}Cache Size: ${goto 125}${color2}#{cache_size}"
+puts ""
+puts "${color0}Available Updates: ${color1}"
 
 if update_count > 0
-    packages.each do |name, old_vers, arrow, new_vers|
-        if name.length > max_name_length
-            max_name_length = name.length
+	# Determine the max length of each element of a package to display:
+	#   (package name, current version, new version)
+	# so the columns displaying the updates can be aligned.
+	max_lengths = packages.map { |package_name, curr_vers, _, new_vers| 
+		[package_name.length, curr_vers.length, new_vers.length] 
+	}.transpose.map(&:max) # get max lengths for aligning columns
+
+  package_display_info = packages.map do |package_name, curr_vers, _, new_vers|
+    # Fetch the repository information for the package
+    repo = `pacman -Si #{package_name}`[/Repository.*:\s(.*)$/, 1]
+    
+
+    # Separate the version numbers into parts
+    # - same_part = common version part
+    # - curr_diff_part = trailing difference in current version
+    # - new_diff_part = trailing difference in new version
+    last_delim = 0
+    same_part = ""
+    curr_diff_part, new_diff_part = curr_vers, new_vers
+    # Find the last character before a difference in version numbers
+    curr_vers.each_char.with_index do |char, i|
+      if curr_vers[i] != new_vers[i]
+        if i > 0 
+            same_part = curr_vers[0..last_delim-1]
         end
-        if old_vers.length > max_old_vers_length
-            max_old_vers_length = old_vers.length
-        end
-        if new_vers.length > max_new_vers_length
-            max_new_vers_length = new_vers.length
-        end
-        info = `pacman -Si #{name}`
-        repo = info.match(/Repository.*:\s(.*)$/)[1]
-        repo = '[' + repo + ']'
-        if repo == '[core]'
-            packages_core.push([repo, name, old_vers, new_vers])
-        elsif repo == '[extra]'
-            packages_extra.push([repo, name, old_vers, new_vers])
-        elsif repo == '[community]'
-            packages_community.push([repo, name, old_vers, new_vers])
-        elsif repo == '[multilib]'
-            packages_multilib.push([repo, name, old_vers, new_vers])
-        end
+        curr_diff_part = curr_vers[last_delim..]
+        new_diff_part = new_vers[last_delim..]
+        break
+      # elsif ['.','-',':'].include? curr_vers[i]
+      else
+        last_delim = i
+      end
     end
-    packages_core.each do |repo, name, old_vers, new_vers| 
-      printf "${color1}%-11s ${color2}%-#{max_name_length}s  ${color3}%-#{max_old_vers_length}s  ${color1}=>  ${color3}%-#{max_new_vers_length}s\n", repo, name, old_vers, new_vers
-    end
-    packages_extra.each do |repo, name, old_vers, new_vers| 
-      printf "${color1}%-11s ${color2}%-#{max_name_length}s  ${color3}%-#{max_old_vers_length}s  ${color1}=>  ${color3}%-#{max_new_vers_length}s\n", repo, name, old_vers, new_vers
-    end
-    packages_community.each do |repo, name, old_vers, new_vers|
-      printf "${color1}%-11s ${color2}%-#{max_name_length}s  ${color3}%-#{max_old_vers_length}s  ${color1}=>  ${color3}%-#{max_new_vers_length}s\n", repo, name, old_vers, new_vers
-    end
-    packages_multilib.each do |repo, name, old_vers, new_vers| 
-      printf "${color1}%-11s ${color2}%-#{max_name_length}s  ${color3}%-#{max_old_vers_length}s  ${color1}=>  ${color3}%-#{max_new_vers_length}s\n", repo, name, old_vers, new_vers
-    end
+    [repo, package_name, same_part, curr_diff_part, new_diff_part]
+  end.sort
+  
+  package_display_info.each do |repo, package_name, same_part, curr_diff_part, new_diff_part|
+    curr_vers_str = "#{same_part}${color2}#{curr_diff_part}" + ' ' * (max_lengths[1] - (same_part.length + curr_diff_part.length))
+    new_vers_str = "#{same_part}${color2}#{new_diff_part}"
+    
+    # Format and print the package update information
+    printf "${color1}%-7s ${color2}%-#{max_lengths[0]}s  ${color1}%-#{max_lengths[1]}s  ${color1}=>  ${color1}%-#{max_lengths[2]}s\n", "[#{repo}]", package_name, curr_vers_str, new_vers_str
+  end
 else
   puts "N/A"
 end
