@@ -2,5 +2,6 @@
 # 
 # Setup Conky Scripts
 
-ln -s ~/.conky ~/.config/conky
+# change this. don't need it. just add /dev/conky to openbox autostart
+ln -s /home/michael/dev/conky /home/michael/.config/conky
 

@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 #
 # pacman-updates.rb
-# Helper script for Conky to check and list pacman updates (native packages only).
+# Helper script for Conky to check and list pacman updates (explicitly installed native packages only).
 #
 # Assumptions:
 #	  - `pacman-contrib` package is installed, which provides `checkupdates`
@@ -17,10 +17,15 @@ update_results = `checkupdates`
 packages = update_results.lines.map { |line| line.split }
 update_count = packages.size 
 
+# Fetch the list of explicitly installed packages with updates
+explicit_update_results = `checkupdates | grep -F -f <(pacman -Qe | awk '{print $1}')`
+explicit_packages = explicit_update_results.lines.map { |line| line.split }
+explicit_update_count = explicit_packages.size
+
 # Display the Pacman header info
 puts "${color0}Pacman  ${hr}"
-puts "${color1}Installed: ${goto 125}${color2}#{num_installed} ${alignr}${color1}Updates: ${color2}#{update_count}"
-puts "${color1}Cache Size: ${goto 125}${color2}#{cache_size}"
+puts "${color1}Installed: ${goto 125}${color2}#{num_installed} ${alignr}${color1}Total Updates: ${color2}#{update_count}"
+puts "${color1}Cache Size: ${goto 125}${color2}#{cache_size} ${alignr}${color1}Explicitly Installed: ${color2}#{explicit_update_count}"
 puts ""
 puts "${color0}Available Updates: ${color1}"
 

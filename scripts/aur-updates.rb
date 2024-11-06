@@ -49,10 +49,10 @@ available_updates = ""
 
 local_packages.each do |package|
 	latest_package = json_results["results"].find { |result| result["Name"] == package.name }
-	latest_version = latest_package["Version"]
-	if latest_version != package.version
-		available_updates += "${color2}%-20s ${color3}%-15s ${color2}-> %s\n" % [package.name, package.version, latest_version]
-	end
+    latest_version = latest_package["Version"]
+	 if latest_version != package.version
+		 available_updates += "${color2}%-20s ${color3}%-15s ${color2}-> %s\n" % [package.name, package.version, latest_version]
+	 end
 end
 
 num_non_dev_updates = available_updates.lines.count
