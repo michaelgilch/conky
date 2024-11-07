@@ -8,19 +8,27 @@
 #
 # Author: Michael Gilchrist (michaelgilch@gmail.com)
 
-# Fetch number of installed packages and pacman cache size
-num_installed = `pacman -Qn | wc -l`.strip
-cache_size = `du -sh /var/cache/pacman/pkg | cut -f1`.strip
+# Fetch number of installed packages, packages needing updates, and pacman cache size
+begin
+  num_installed = `pacman -Qn | wc -l`.strip
+  raise "Error fetching installed packages count" if num_installed.empty?
 
-# Fetch the pending updates and count
-update_results = `checkupdates`
-packages = update_results.lines.map { |line| line.split }
-update_count = packages.size 
+  cache_size = `du -sh /var/cache/pacman/pkg | cut -f1`.strip
+  raise "Error fetching cache size" if cache_size.empty?
 
-# Fetch the list of explicitly installed packages with updates
-explicit_update_results = `checkupdates | grep -F -f <(pacman -Qe | awk '{print $1}')`
-explicit_packages = explicit_update_results.lines.map { |line| line.split }
-explicit_update_count = explicit_packages.size
+  # Fetch pending updates for all native packages
+  update_results = `checkupdates`
+  packages = update_results.lines.map { |line| line.split }
+  update_count = packages.size
+
+  # Fetch pending updates only for explicitly installed packages
+  explicit_update_results = `checkupdates | grep -F -f <(pacman -Qe | awk '{print $1}')`
+  explicit_packages = explicit_update_results.lines.map { |line| line.split }
+  explicit_update_count = explicit_packages.size
+rescue => e
+  puts "Error: #{e.message}"
+  exit 1
+end
 
 # Display the Pacman header info
 puts "${color0}Pacman  ${hr}"
