@@ -35,20 +35,17 @@ puts "${color0}Pacman  ${hr}"
 puts "${color1}Installed: ${goto 125}${color2}#{num_installed} ${alignr}${color1}Total Updates: ${color2}#{update_count}"
 puts "${color1}Cache Size: ${goto 125}${color2}#{cache_size} ${alignr}${color1}Explicitly Installed: ${color2}#{explicit_update_count}"
 puts ""
-puts "${color0}Available Updates: ${color1}"
+puts "${color0}Available Updates (Explicit): ${color1}"
 
 if update_count > 0
 	# Determine the max length of each element of a package to display:
 	#   (package name, current version, new version)
 	# so the columns displaying the updates can be aligned.
-	max_lengths = packages.map { |package_name, curr_vers, _, new_vers| 
+	max_lengths = explicit_packages.map { |package_name, curr_vers, _, new_vers| 
 		[package_name.length, curr_vers.length, new_vers.length] 
 	}.transpose.map(&:max) # get max lengths for aligning columns
 
-  package_display_info = packages.map do |package_name, curr_vers, _, new_vers|
-    # Fetch the repository information for the package
-    repo = `pacman -Si #{package_name}`[/Repository.*:\s(.*)$/, 1]
-    
+  package_display_info = explicit_packages.map do |package_name, curr_vers, _, new_vers|
 
     # Separate the version numbers into parts
     # - same_part = common version part
@@ -71,15 +68,16 @@ if update_count > 0
         last_delim = i
       end
     end
-    [repo, package_name, same_part, curr_diff_part, new_diff_part]
+    [package_name, same_part, curr_diff_part, new_diff_part]
   end.sort
   
-  package_display_info.each do |repo, package_name, same_part, curr_diff_part, new_diff_part|
-    curr_vers_str = "#{same_part}${color2}#{curr_diff_part}" + ' ' * (max_lengths[1] - (same_part.length + curr_diff_part.length))
-    new_vers_str = "#{same_part}${color2}#{new_diff_part}"
+  # package_display_info.each do |repo, package_name, same_part, curr_diff_part, new_diff_part|
+  package_display_info.each do |package_name, same_part, curr_diff_part, new_diff_part|
+    curr_vers_str = "#{same_part}${color3}#{curr_diff_part}" + ' ' * (max_lengths[1] - (same_part.length + curr_diff_part.length))
+    new_vers_str = "#{same_part}${color3}#{new_diff_part}"
     
     # Format and print the package update information
-    printf "${color1}%-7s ${color2}%-#{max_lengths[0]}s  ${color1}%-#{max_lengths[1]}s  ${color1}=>  ${color1}%-#{max_lengths[2]}s\n", "[#{repo}]", package_name, curr_vers_str, new_vers_str
+    printf "${color2}%-#{max_lengths[0]}s  ${color2}%-#{max_lengths[1]}s  ${color1}=>  ${color2}%-#{max_lengths[2]}s\n", package_name, curr_vers_str, new_vers_str
   end
 else
   puts "N/A"
