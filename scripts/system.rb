@@ -22,8 +22,8 @@ end
 # ---------------------
 
 def display_os()
-	puts "${color1}${goto 175}Kernel:  ${color2}${alignr}${kernel}"
-	puts "${color1}${goto 175}Uptime:  ${color2}${alignr}${uptime_short}"
+	puts "${color1}${goto 150}Kernel:  ${color2}${alignr}${kernel}"
+	puts "${color1}${goto 150}Uptime:  ${color2}${alignr}${uptime_short}"
 end
 
 # CPU Info
@@ -35,8 +35,8 @@ def display_cpu_model()
 end
 
 def display_process_info()
-	puts "${color1}Processes:     ${color2}${running_processes} ${color1}of${color2} ${processes}"  \
-         "${goto 200}${color1}Threads: ${alignr}${color2}${running_threads} ${color1}of${color2} ${threads}"
+	puts "${color1}Processes: ${color2}${running_processes} ${color1}/${color2} ${processes}"  \
+         "${goto 200}${color1}Threads: ${alignr}${color2}${running_threads} ${color1}/${color2} ${threads}"
 end
 
 def display_load_and_temp()
@@ -48,15 +48,15 @@ def display_load_and_temp()
     else
         temp_color = "${color4}"
     end
-    puts "${color1}Load: ${color2}${loadavg}${goto 280}${color1}Temp: #{temp_color} ${alignr}#{temp.strip}"
+    puts "${color1}Load: ${color2}${loadavg}${goto 200}${color1}Temp: #{temp_color} ${alignr}#{temp.strip}"
 end
 
 def display_cores()
 	num_processors = `cat /proc/cpuinfo | grep 'processor' | wc -l`.to_i 
     num_lines = num_processors / 2
     for i in 1..num_lines
-        puts "${color1}Core #{i}:  ${color2}${cpu cpu#{i}}%   ${goto 90}${color6}${cpubar cpu#{i} 10,50}" \
-             "${goto 200}${color1}Core #{i + num_lines}:  ${color2}${cpu cpu#{i + num_lines}}%   ${goto 250}${color6}${cpubar cpu#{i + num_lines} 10,50}"
+        puts "${color1}Core #{i}: ${color2}${cpu cpu#{i}} % ${goto 90}${color6}${cpubar cpu#{i} 10,50}" \
+             "${goto 150}${color1}Core #{i + num_lines}:  ${color2}${cpu cpu#{i + num_lines}} %  ${goto 250}${color6}${cpubar cpu#{i + num_lines} 10,50}"
     end
 end
 
@@ -78,7 +78,7 @@ end
 # --------------
 
 def display_mem_usage()
-	ram_used = "${color1}Used: ${color2}${mem}${goto 200}${memperc}% ${goto 250}${color5}${membar 13,150}"
+	ram_used = "${color1}Used: ${color2}${mem}${alignr}${memperc} % ${color5}${membar 10,100}"
 	ram_free = "${color1}Free: ${color2}${memfree}${goto 140}${color1} of ${color2}${memmax}"
 	buffers = "${goto 200}${color1}Buffers: ${color2}${alignr}${buffers}"
 	cached = "${goto 200}${color1}Cached: ${color2}${alignr}${cached}"
