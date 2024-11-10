@@ -31,7 +31,7 @@ end
 
 def display_line(label, value, align_right_label = nil, align_right_value = nil)
   align_right_str = align_right_label ? "${alignr}${color1}#{align_right_label}: ${color2}#{align_right_value}" : ""
-  puts "${color1}#{label}: ${goto 125}${color2}#{value} #{align_right_str}"
+  puts "${color1}#{label}: ${goto 100}${color2}#{value} #{align_right_str}"
 end
 
 def format_package_update(package_name, curr_vers, new_vers, max_lengths)
