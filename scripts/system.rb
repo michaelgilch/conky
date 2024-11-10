@@ -67,6 +67,13 @@ def display_top_cpu()
     end
 end
 
+def display_top_cpu_short()
+	puts '${color1}Processes'
+    (1..5).to_a.each do |i|
+       	puts "${color2}${top pid #{i}} - ${top name #{i}}  ${alignr}${top time #{i}} ${top cpu #{i}}%"
+    end
+end
+
 # Memory Info
 # --------------
 
@@ -82,6 +89,13 @@ def display_top_mem()
     puts '${color1}Process ${goto 200}PID ${goto 280}Mem ${alignr}Used'
     (1..5).to_a.each do |i|
         puts "${color2}${top_mem name #{i}} ${goto 150} ${top_mem pid #{i}} ${goto 230} ${top_mem mem #{i}}% ${alignr}${top_mem mem_res #{i}}"
+    end
+end
+
+def display_top_mem_short()
+	puts '${color1}Processes'
+    (1..5).to_a.each do |i|
+       	puts "${color2}${top_mem pid #{i}} - ${top_mem name #{i}}  ${alignr}${top_mem mem #{i}} %"
     end
 end
 
@@ -125,12 +139,12 @@ display_load_and_temp
 display_blank_line
 display_cores
 display_blank_line
-display_top_cpu
+display_top_cpu_short
 display_header("MEMORY")
 display_blank_line
 display_mem_usage
 display_blank_line
-display_top_mem
+display_top_mem_short
 
 display_header("STORAGE")
 display_blank_line
