@@ -70,7 +70,7 @@ end
 def display_top_cpu_short()
 	puts '${color1}Processes'
     (1..5).to_a.each do |i|
-       	puts "${color2}${top pid #{i}} - ${top name #{i}}  ${alignr}${top time #{i}} ${top cpu #{i}}%"
+       	puts "${color2}${top pid #{i}} - ${top name #{i}}  ${alignr}${top time #{i}} ${top cpu #{i}} %"
     end
 end
 
@@ -95,7 +95,7 @@ end
 def display_top_mem_short()
 	puts '${color1}Processes'
     (1..5).to_a.each do |i|
-       	puts "${color2}${top_mem pid #{i}} - ${top_mem name #{i}}  ${alignr}${top_mem mem #{i}} %"
+       	puts "${color2}${top_mem pid #{i}} - ${top_mem name #{i}}  ${alignr}${top_mem mem_res #{i}} ${top_mem mem #{i}} %"
     end
 end
 
