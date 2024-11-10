@@ -45,33 +45,18 @@ if update_count > 0
 		[package_name.length, curr_vers.length, new_vers.length] 
 	}.transpose.map(&:max) # get max lengths for aligning columns
 
+  # Prepare update information for each package, and sort by package name
   package_display_info = explicit_packages.map do |package_name, curr_vers, _, new_vers|
 
-    # Separate the version numbers into parts
-    # - same_part = common version part
-    # - curr_diff_part = trailing difference in current version
-    # - new_diff_part = trailing difference in new version
-    last_delim = 0
-    same_part = ""
-    curr_diff_part, new_diff_part = curr_vers, new_vers
-    # Find the last character before a difference in version numbers
-    curr_vers.each_char.with_index do |char, i|
-      if curr_vers[i] != new_vers[i]
-        if i > 0 
-            same_part = curr_vers[0..last_delim-1]
-        end
-        curr_diff_part = curr_vers[last_delim..]
-        new_diff_part = new_vers[last_delim..]
-        break
-      # elsif ['.','-',':'].include? curr_vers[i]
-      else
-        last_delim = i
-      end
-    end
+    # Determine the common prefix length in version strings
+    common_length = curr_vers.chars.zip(new_vers.chars).take_while { |a, b| a == b }.size
+    same_part = curr_vers[0, common_length]
+    curr_diff_part = curr_vers[common_length..]
+    new_diff_part = new_vers[common_length..]
+
     [package_name, same_part, curr_diff_part, new_diff_part]
   end.sort
   
-  # package_display_info.each do |repo, package_name, same_part, curr_diff_part, new_diff_part|
   package_display_info.each do |package_name, same_part, curr_diff_part, new_diff_part|
     curr_vers_str = "#{same_part}${color3}#{curr_diff_part}" + ' ' * (max_lengths[1] - (same_part.length + curr_diff_part.length))
     new_vers_str = "#{same_part}${color3}#{new_diff_part}"
