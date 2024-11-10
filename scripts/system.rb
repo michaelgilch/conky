@@ -78,7 +78,7 @@ end
 # --------------
 
 def display_mem_usage()
-	ram_used = "${color1}Used: ${color2}${mem}${alignr}${memperc} % ${color5}${membar 10,100}"
+	ram_used = "${color1}Used: ${color2}${mem}${alignr}${memperc} % ${color5}${membar 8,100}"
 	ram_free = "${color1}Free: ${color2}${memfree}${goto 140}${color1} of ${color2}${memmax}"
 	buffers = "${goto 200}${color1}Buffers: ${color2}${alignr}${buffers}"
 	cached = "${goto 200}${color1}Cached: ${color2}${alignr}${cached}"
@@ -116,18 +116,43 @@ def make_partition_line(partition_info)
     if mnt_name.start_with?('/run/media/')
         mnt_name.slice! "/run/media/michael/"
     end
-    if (mnt_name.length > 24)
-        mnt_name = mnt_name[0..24] + '...'
+    if (mnt_name.length > 16)
+        mnt_name = mnt_name[0..16] + '...'
     end
     "${color2}#{mnt_name} ${goto 150}${color1}#{type} ${alignr}${color2}#{percent} " \
             "${color1}of${color2} #{size}  ${color5}${fs_bar 10,50 #{mnt}}\n"
-    "${color2}#{mnt_name}${alignr} ${color1}#{size}   ${color2}#{percent} ${color5}${fs_bar 10,100 #{mnt}}\n"
+    "${color2}#{mnt_name}${alignr} ${color1}#{size}   ${color2}#{percent} ${color5}${fs_bar 8,100 #{mnt}}\n"
 end
 
 def display_block_partitions(block_regex)
     partitions = `df -hT | grep #{block_regex} | sort`.split("\n").to_a
     partitions.each { |partition_info| puts make_partition_line(partition_info) }
     puts ''
+end
+
+def display_storage_devices()
+	mounted_devices = `df -hT | grep "^/dev/sd*" | sort`.split("\n").to_a
+	removable_devices = ''
+	block_devices = []
+	
+	mounted_devices.each do |device|
+	    fs, _type, _size, _used, _avail, _percent, mount = device.split
+	
+	    if mount.start_with?('/run/media/')
+	        removable_devices += make_partition_line(device)
+	    else
+	        block = fs[5..7]
+	        unless block_devices.include?(block)
+	            block_devices.insert(-1, block)
+	            model = `lsblk -io KNAME,MODEL | grep "^#{block} "`.split('   ').to_a[1].strip
+	            make_block_header_lines(block, model)
+	            display_block_partitions("^/dev/#{block}")
+	        end
+	    end
+	end
+	
+	puts '${color1}Removables'
+	puts "${color2}#{removable_devices}"
 end
 
 
@@ -149,25 +174,5 @@ display_top_mem_short
 
 display_header("STORAGE")
 display_blank_line
-mounted_devices = `df -hT | grep "^/dev/sd*" | sort`.split("\n").to_a
-removable_devices = ''
-block_devices = []
+display_storage_devices
 
-mounted_devices.each do |device|
-    fs, _type, _size, _used, _avail, _percent, mount = device.split
-
-    if mount.start_with?('/run/media/')
-        removable_devices += make_partition_line(device)
-    else
-        block = fs[5..7]
-        unless block_devices.include?(block)
-            block_devices.insert(-1, block)
-            model = `lsblk -io KNAME,MODEL | grep "^#{block} "`.split('   ').to_a[1].strip
-            make_block_header_lines(block, model)
-            display_block_partitions("^/dev/#{block}")
-        end
-    end
-end
-
-puts '${color1}Removables'
-puts "${color2}#{removable_devices}"
