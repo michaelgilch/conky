@@ -116,11 +116,12 @@ def make_partition_line(partition_info)
     if mnt_name.start_with?('/run/media/')
         mnt_name.slice! "/run/media/michael/"
     end
-    if (mnt_name.length > 14)
-        mnt_name = mnt_name[0..14] + '...'
+    if (mnt_name.length > 24)
+        mnt_name = mnt_name[0..24] + '...'
     end
     "${color2}#{mnt_name} ${goto 150}${color1}#{type} ${alignr}${color2}#{percent} " \
             "${color1}of${color2} #{size}  ${color5}${fs_bar 10,50 #{mnt}}\n"
+    "${color2}#{mnt_name}${alignr} ${color1}#{size}   ${color2}#{percent} ${color5}${fs_bar 10,100 #{mnt}}\n"
 end
 
 def display_block_partitions(block_regex)
@@ -168,5 +169,5 @@ mounted_devices.each do |device|
     end
 end
 
-puts '${color1}Removables:'
+puts '${color1}Removables'
 puts "${color2}#{removable_devices}"
