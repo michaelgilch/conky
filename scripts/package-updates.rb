@@ -52,13 +52,17 @@ begin
   num_installed = `pacman -Qn | wc -l`.strip
   cache_size = `du -sh /var/cache/pacman/pkg | cut -f1`.strip
 
-  # Check for available updates from the pacman repo
+  # Fetch the pending updates and count
   update_results = `checkupdates`
   packages = update_results.lines.map { |line| line.split }
+  update_count = packages.size 
 
-  # Check for available updates from explicitly installed packages in the pacman repo
-  explicit_update_results = `checkupdates | grep -F -f <(pacman -Qe | awk '{print $1}')`
-  explicit_packages = explicit_update_results.lines.map { |line| line.split }
+  # Get the list of explicitly installed package names
+  explicit_package_names = `pacman -Qe`.lines.map { |line| line.split.first }
+
+  # Filter packages to only those that are explicitly installed
+  explicit_packages = packages.select { |package| explicit_package_names.include?(package[0]) }
+  explicit_update_count = explicit_packages.size
 
 rescue => e
   puts "Error: #{e.message}"
