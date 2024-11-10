@@ -5,6 +5,7 @@
 # Conky helper script for displaying package updates from both the pacman repositories
 # as well as the ArchLinux User Repository (AUR).
 #
+# Michael Gilchrist (michaelgilch@gmail.com)
 
 require "open-uri"
 require "json"
