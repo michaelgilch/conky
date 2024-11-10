@@ -36,7 +36,7 @@ end
 
 def display_process_info()
 	puts "${color1}Processes: ${color2}${running_processes} ${color1}/${color2} ${processes}"  \
-         "${goto 200}${color1}Threads: ${alignr}${color2}${running_threads} ${color1}/${color2} ${threads}"
+         "${goto 185}${color1}Threads: ${alignr}${color2}${running_threads} ${color1}/${color2} ${threads}"
 end
 
 def display_load_and_temp()
@@ -48,7 +48,7 @@ def display_load_and_temp()
     else
         temp_color = "${color4}"
     end
-    puts "${color1}Load: ${color2}${loadavg}${goto 200}${color1}Temp: #{temp_color} ${alignr}#{temp.strip}"
+    puts "${color1}Load: ${color2}${loadavg}${goto 185}${color1}Temp: #{temp_color} ${alignr}#{temp.strip}"
 end
 
 def display_cores()
@@ -56,14 +56,14 @@ def display_cores()
     num_lines = num_processors / 2
     for i in 1..num_lines
         puts "${color1}Core #{i}: ${color2}${cpu cpu#{i}} % ${goto 90}${color6}${cpubar cpu#{i} 10,50}" \
-             "${goto 150}${color1}Core #{i + num_lines}:  ${color2}${cpu cpu#{i + num_lines}} %  ${goto 250}${color6}${cpubar cpu#{i + num_lines} 10,50}"
+             "${goto 160}${color1}Core #{i + num_lines}:  ${color2}${cpu cpu#{i + num_lines}} %  ${goto 250}${color6}${cpubar cpu#{i + num_lines} 10,50}"
     end
 end
 
 def display_top_cpu()
     puts '${color1}Process ${goto 200}PID ${goto 280}CPU ${alignr}Time'
     (1..5).to_a.each do |i|
-        puts "${color2}${top name #{i}} ${goto 160}${top pid #{i}} ${goto 240}${top cpu #{i}}% ${alignr}${top time #{i}}"
+        puts "${color2}${top name #{i}} ${goto 170}${top pid #{i}} ${goto 240}${top cpu #{i}}% ${alignr}${top time #{i}}"
     end
 end
 
@@ -99,8 +99,21 @@ def display_top_mem_short()
     end
 end
 
+# Network Info
+# ------------
+
+def display_network()
+	external_ip = `curl icanhazip.com`
+
+	puts "${if_up enp5s0}${color1}LAN: ${color2}${addr enp5s0}${alignr}${color1}WAN:  ${color2}#{external_ip}"
+	puts ''
+	puts '${color1}Down Speed:  ${color2}${downspeed enp5s0}${goto 175}${color1}Total Down: ${alignr}${color2}${totaldown enp5s0}'
+	puts '${color1}Up Speed:    ${color2}${upspeed enp5s0}${goto 175}${color1}Total Up: ${alignr}${color2}${totalup enp5s0}'
+	puts '${endif}'
+end
+
 # Storage Info
-# --------------
+# ------------
 
 def make_block_header_lines(block, model)
     puts "${color1}#{model} (#{block})"
@@ -157,6 +170,7 @@ end
 
 
 display_os 
+
 display_header("CPU")
 display_cpu_model
 display_blank_line
@@ -166,11 +180,16 @@ display_blank_line
 display_cores
 display_blank_line
 display_top_cpu_short
+
 display_header("MEMORY")
 display_blank_line
 display_mem_usage
 display_blank_line
 display_top_mem_short
+
+display_header("NETWORK")
+display_blank_line
+display_network
 
 display_header("STORAGE")
 display_blank_line
