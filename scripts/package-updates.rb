@@ -60,10 +60,6 @@ begin
   explicit_update_results = `checkupdates | grep -F -f <(pacman -Qe | awk '{print $1}')`
   explicit_packages = explicit_update_results.lines.map { |line| line.split }
 
-  # Display the Pacman Repo header into
-  display_header("Pacman")
-  display_line("Installed", num_installed, "Total Updates", packages.size)
-  display_line("Cache Size", cache_size, "Explicitly Installed", explicit_packages.size)
 rescue => e
   puts "Error: #{e.message}"
   exit 1
@@ -105,6 +101,11 @@ end
 # Combine Pacman and AUR updates only for max_lengths calculation
 combined_updates = explicit_packages + aur_updates
 max_lengths = combined_updates.map { |pkg| [pkg[0].length, pkg[1].length, pkg[2].length] }.transpose.map(&:max)
+
+# Display the Pacman Repo header into
+display_header("Pacman")
+display_line("Installed", num_installed, "Total Updates", packages.size)
+display_line("Cache Size", cache_size, "Explicitly Installed", explicit_packages.size)
 
 # Display Pacman updates
 display_blank_line
