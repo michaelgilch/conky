@@ -10,6 +10,7 @@
 require "open-uri"
 require "json"
 
+HOSTNAME = ARGV[0]
 AUR_QUERY_ADDRESS = "https://aur.archlinux.org/rpc.php?v=5&type=multiinfo&arg[]="
 
 def check_for_dependencies()
@@ -31,7 +32,7 @@ end
 
 def display_line(label, value, align_right_label = nil, align_right_value = nil)
   align_right_str = align_right_label ? "${alignr}${color1}#{align_right_label}: ${color2}#{align_right_value}" : ""
-  puts "${color1}#{label}: ${goto 100}${color2}#{value} #{align_right_str}"
+  puts "${color1}#{label}: #{get_line_spacing()} ${color2}#{value} #{align_right_str}"
 end
 
 def format_package_update(package_name, curr_vers, new_vers, max_lengths)
@@ -44,6 +45,15 @@ def format_package_update(package_name, curr_vers, new_vers, max_lengths)
   new_vers_str = "#{same_part}${color3}#{new_diff_part}"
   
   printf "${color2}%-#{max_lengths[0]}s  ${color2}%-#{max_lengths[1]}s  ${color1}=>  ${color2}%-#{max_lengths[2]}s\n", package_name, curr_vers_str, new_vers_str
+end
+
+def get_line_spacing()
+  if HOSTNAME == "davinci"
+    spacing = "${goto 100}"
+  elsif HOSTNAME == "galileo"
+    spacing = "${goto 150}"
+  end 
+  return spacing
 end
 
 check_for_dependencies
