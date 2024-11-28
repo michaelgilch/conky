@@ -32,14 +32,21 @@ directories.each do |entry|
     untracked_files, _stderr, _status = Open3.capture3('git ls-files --others --exclude-standard')
     if !untracked_files.strip.empty?
       changes_detected = true
-      puts "${color1}#{entry}${color2}${alignr}Untracked files"
+      puts "${color1}#{entry}${color2}${alignr}Untracked files detected"
     end
 
-    # Check for uncommitted changes
-    uncommitted_changes, _stderr, _status = Open3.capture3('git diff --stat')
-    if !uncommitted_changes.strip.empty?
+    # Check for unstaged changes
+    unstaged_changes, _stderr, _status = Open3.capture3('git diff --stat')
+    if !unstaged_changes.strip.empty?
       changes_detected = true
-      puts "${color1}#{entry}${color2}${alignr}Uncommitted changes"
+      puts "${color1}#{entry}${color2}${alignr}Unstaged changes detected"
+    end
+
+    # Check for staged changes
+    staged_changes, _stderr, _status = Open3.capture3('git diff --cached --stat')
+    if !staged_changes.strip.empty?
+      changes_detected = true
+      puts "${color1}#{entry}${color2}${alignr}Staged changes detected"
     end
 
     # Check for changes not pushed to remote
@@ -57,21 +64,21 @@ directories.each do |entry|
       # no-op
       # puts "${color1}#{entry}${color2}${alignr}Clean"
     elsif local.strip == base.strip
-      # puts "  - Changes need to be pushed to remote."
-      changes_detected = true
-      puts "${color1}#{entry}${color2}${alignr}Push needed"
-    elsif remote.strip == base.strip
       # puts "  - Changes need to be pulled from remote."
       changes_detected = true
       puts "${color1}#{entry}${color2}${alignr}Pull needed"
+    elsif remote.strip == base.strip
+      # puts "  - Changes need to be pushed to remote."
+      changes_detected = true
+      puts "${color1}#{entry}${color2}${alignr}Push needed"
     else
       # puts "  - Divergence detected: both pull and push required."
       changes_detected = true
-      puts "${color1}#{entry}${color2}${alignr}Divergence"
+      puts "${color1}#{entry}${color2}${alignr}Divergence detected"
     end
   end
 end
 
 if !changes_detected
-  puts "${color1}No changes"
+  puts "${color1}No changes detected"
 end
