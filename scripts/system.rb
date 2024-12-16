@@ -204,7 +204,7 @@ def display_block_partitions(block_regex)
 end
 
 def display_storage_devices()
-	mounted_devices = `df -hT | grep "^/dev/sd*" | sort`.split("\n").to_a
+	mounted_devices = `df -hT | grep -e "^/dev/sd*" -e "^/dev/nvme*" | sort`.split("\n").to_a
 	removable_devices = ''
 	block_devices = []
 	
