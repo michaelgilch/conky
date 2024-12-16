@@ -8,8 +8,9 @@
 
 HOSTNAME = ARGV[0]
 
+# ---------------------
 # General
-# -------
+# ---------------------
 
 def display_header(title)
 	puts "\n"
@@ -21,28 +22,29 @@ def display_blank_line()
 end
 
 def get_line_spacing()
-  if HOSTNAME == "davinci"
-    spacing = "${goto 100}"
-  elsif HOSTNAME == "galileo"
-    spacing = "${goto 150}"
-  end 
-  return spacing
+    if HOSTNAME == "davinci"
+        spacing = "${goto 100}"
+    elsif HOSTNAME == "galileo"
+        spacing = "${goto 150}"
+    end 
+    return spacing
 end
 
 def get_battery_level()
     return `acpi | cut -d' ' -f4,5`
 end
 
+# ---------------------
 # Operating System Info
 # ---------------------
 
 def display_os()
     spacing=100
-  if HOSTNAME == "davinci"
-    spacing = "${goto 150}"
-  elsif HOSTNAME == "galileo"
-    spacing = "${goto 200}"
-  end 
+    if HOSTNAME == "davinci"
+        spacing = "${goto 150}"
+    elsif HOSTNAME == "galileo"
+        spacing = "${goto 200}"
+    end 
 
 	puts "${color1}#{spacing}Kernel:  ${color2}${alignr}${kernel}"
 	puts "${color1}#{spacing}Uptime:  ${color2}${alignr}${uptime_short}"
@@ -52,8 +54,9 @@ def display_os()
     end
 end
 
+# ---------------------
 # CPU Info
-# --------
+# ---------------------
 
 def display_cpu_model()
 	cpu_model = `cat /proc/cpuinfo | grep 'model name' | sed -e 's/model name.*: //' | uniq`
@@ -62,11 +65,11 @@ end
 
 def display_process_info()
     spacing=100
-      if HOSTNAME == "davinci"
-    spacing = "${goto 185}"
-  elsif HOSTNAME == "galileo"
-    spacing = "${goto 250}"
-  end 
+    if HOSTNAME == "davinci"
+        spacing = "${goto 185}"
+    elsif HOSTNAME == "galileo"
+        spacing = "${goto 250}"
+    end 
 
 	puts "${color1}Processes: ${color2}${running_processes} ${color1}/${color2} ${processes}"  \
          "#{spacing}${color1}Threads: ${alignr}${color2}${running_threads} ${color1}/${color2} ${threads}"
@@ -74,11 +77,11 @@ end
 
 def display_load_and_temp()
     spacing=100
-      if HOSTNAME == "davinci"
-    spacing = "${goto 185}"
-  elsif HOSTNAME == "galileo"
-    spacing = "${goto 250}"
-  end 
+    if HOSTNAME == "davinci"
+        spacing = "${goto 185}"
+    elsif HOSTNAME == "galileo"
+        spacing = "${goto 250}"
+    end 
 
     temp = `sensors | grep Package | cut -c 17-23`
     if temp.to_i < 70
@@ -130,8 +133,9 @@ def display_top_cpu_short()
     end
 end
 
+# ---------------------
 # Memory Info
-# --------------
+# ---------------------
 
 def display_mem_usage()
     barsize = "8,100"
@@ -159,8 +163,9 @@ def display_top_mem_short()
     end
 end
 
+# ---------------------
 # Network Info
-# ------------
+# ---------------------
 
 def display_network()
 	external_ip = `curl icanhazip.com`
@@ -172,8 +177,9 @@ def display_network()
 	puts '${endif}'
 end
 
+# ---------------------
 # Storage Info
-# ------------
+# ---------------------
 
 def make_block_header_lines(block, model)
     puts "${color1}#{model} (#{block})"
@@ -228,6 +234,9 @@ def display_storage_devices()
 	puts "${color2}#{removable_devices}"
 end
 
+# =====================
+# MAIN
+# =====================
 
 display_os 
 
