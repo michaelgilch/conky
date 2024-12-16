@@ -46,7 +46,10 @@ def display_os()
 
 	puts "${color1}#{spacing}Kernel:  ${color2}${alignr}${kernel}"
 	puts "${color1}#{spacing}Uptime:  ${color2}${alignr}${uptime_short}"
-    puts "${color1}#{spacing}Battery: ${color2}${alignr}#{get_battery_level}"
+
+    if HOSTNAME == "galileo"
+        puts "${color1}#{spacing}Battery: ${color2}${alignr}#{get_battery_level}"
+    end
 end
 
 # CPU Info
