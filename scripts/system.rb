@@ -6,6 +6,8 @@
 #
 # Michael Gilchrist (michaelgilch@gmail.com)
 
+HOSTNAME = ARGV[0]
+
 # General
 # -------
 
@@ -18,12 +20,28 @@ def display_blank_line()
   	puts "\n"
 end
 
+def get_line_spacing()
+  if HOSTNAME == "davinci"
+    spacing = "${goto 100}"
+  elsif HOSTNAME == "galileo"
+    spacing = "${goto 150}"
+  end 
+  return spacing
+end
+
 # Operating System Info
 # ---------------------
 
 def display_os()
-	puts "${color1}${goto 150}Kernel:  ${color2}${alignr}${kernel}"
-	puts "${color1}${goto 150}Uptime:  ${color2}${alignr}${uptime_short}"
+    spacing=100
+  if HOSTNAME == "davinci"
+    spacing = "${goto 150}"
+  elsif HOSTNAME == "galileo"
+    spacing = "${goto 200}"
+  end 
+
+	puts "${color1}#{spacing}Kernel:  ${color2}${alignr}${kernel}"
+	puts "${color1}#{spacing}Uptime:  ${color2}${alignr}${uptime_short}"
 end
 
 # CPU Info
@@ -35,11 +53,25 @@ def display_cpu_model()
 end
 
 def display_process_info()
+    spacing=100
+      if HOSTNAME == "davinci"
+    spacing = "${goto 185}"
+  elsif HOSTNAME == "galileo"
+    spacing = "${goto 250}"
+  end 
+
 	puts "${color1}Processes: ${color2}${running_processes} ${color1}/${color2} ${processes}"  \
-         "${goto 185}${color1}Threads: ${alignr}${color2}${running_threads} ${color1}/${color2} ${threads}"
+         "#{spacing}${color1}Threads: ${alignr}${color2}${running_threads} ${color1}/${color2} ${threads}"
 end
 
 def display_load_and_temp()
+    spacing=100
+      if HOSTNAME == "davinci"
+    spacing = "${goto 185}"
+  elsif HOSTNAME == "galileo"
+    spacing = "${goto 250}"
+  end 
+
     temp = `sensors | grep Package | cut -c 17-23`
     if temp.to_i < 70
         temp_color = "${color2}"
@@ -48,7 +80,7 @@ def display_load_and_temp()
     else
         temp_color = "${color4}"
     end
-    puts "${color1}Load: ${color2}${loadavg}${goto 185}${color1}Temp: #{temp_color} ${alignr}#{temp.strip}"
+    puts "${color1}Load: ${color2}${loadavg}#{spacing}${color1}Temp: #{temp_color} ${alignr}#{temp.strip}"
 end
 
 def display_cores()
@@ -57,6 +89,22 @@ def display_cores()
     for i in 1..num_lines
         puts "${color1}Core #{i}: ${color2}${cpu cpu#{i}} % ${goto 90}${color6}${cpubar cpu#{i} 10,50}" \
              "${goto 160}${color1}Core #{i + num_lines}:  ${color2}${cpu cpu#{i + num_lines}} %  ${goto 250}${color6}${cpubar cpu#{i + num_lines} 10,50}"
+    end
+end
+
+def display_p_cores()
+    puts "${color0}P-Cores"
+    for i in (0..7).step(2)
+        puts "   ${color2}${cpu cpu#{i}}% ${goto 75}${color6}${cpubar cpu#{i} 10,125}" \
+             "${goto 250}   ${color2}${cpu cpu#{i+1}}% ${goto 325}${color6}${cpubar cpu#{i+1} 10,125}"
+    end
+end
+
+def display_e_cores()
+    puts "${color0}E-Cores"
+    for i in (8..15).step(2)
+        puts "   ${color2}${cpu cpu#{i}}% ${goto 75}${color6}${cpubar cpu#{i} 10,125}" \
+             "${goto 250}   ${color2}${cpu cpu#{i+1}}% ${goto 325}${color6}${cpubar cpu#{i+1} 10,125}"
     end
 end
 
@@ -78,7 +126,11 @@ end
 # --------------
 
 def display_mem_usage()
-	ram_used = "${color1}Used: ${color2}${mem}${alignr}${memperc} % ${color5}${membar 8,100}"
+    barsize = "8,100"
+    if HOSTNAME == "galileo"
+        barsize = "10,150"
+    end
+	ram_used = "${color1}Used: ${color2}${mem}${alignr}${memperc} % ${color5}${membar #{barsize}}"
 	ram_free = "${color1}Free: ${color2}${memfree}${goto 140}${color1} of ${color2}${memmax}"
 	buffers = "${goto 200}${color1}Buffers: ${color2}${alignr}${buffers}"
 	cached = "${goto 200}${color1}Cached: ${color2}${alignr}${cached}"
@@ -177,7 +229,13 @@ display_blank_line
 display_process_info
 display_load_and_temp
 display_blank_line
-display_cores
+if HOSTNAME == "davinci"
+    display_cores
+elsif HOSTNAME = "galileo"
+    display_p_cores
+    display_blank_line
+    display_e_cores
+end
 display_blank_line
 display_top_cpu_short
 
