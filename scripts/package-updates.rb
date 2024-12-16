@@ -56,6 +56,15 @@ def get_line_spacing()
   return spacing
 end
 
+def check_for_pacnew()
+  pacnew_files = `find /etc/ -name '*.pacnew' 2>/dev/null`
+  if pacnew_files != ''
+    display_blank_line
+    display_header("Config Updates")
+    puts "${color1}#{pacnew_files}"
+  end
+end
+
 check_for_dependencies
 
 # Part 1: Pacman Package Updates
@@ -145,3 +154,5 @@ end
 
 puts "\n${color0}Development:${color1}"
 puts dev_packages.map(&:first).join("\n")
+
+check_for_pacnew
