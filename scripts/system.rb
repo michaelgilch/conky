@@ -29,6 +29,10 @@ def get_line_spacing()
   return spacing
 end
 
+def get_battery_level()
+    return `acpi | cut -d' ' -f4,5`
+end
+
 # Operating System Info
 # ---------------------
 
@@ -42,6 +46,7 @@ def display_os()
 
 	puts "${color1}#{spacing}Kernel:  ${color2}${alignr}${kernel}"
 	puts "${color1}#{spacing}Uptime:  ${color2}${alignr}${uptime_short}"
+    puts "${color1}#{spacing}Battery: ${color2}${alignr}#{get_battery_level}"
 end
 
 # CPU Info
