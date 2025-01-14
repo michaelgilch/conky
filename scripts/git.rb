@@ -32,21 +32,21 @@ directories.each do |entry|
     untracked_files, _stderr, _status = Open3.capture3('git ls-files --others --exclude-standard')
     if !untracked_files.strip.empty?
       changes_detected = true
-      puts "${color1}#{entry}${color2}${alignr}Untracked files detected"
+      puts "${color1}#{entry}${color2}${alignr}Untracked files"
     end
 
     # Check for unstaged changes
     unstaged_changes, _stderr, _status = Open3.capture3('git diff --stat')
     if !unstaged_changes.strip.empty?
       changes_detected = true
-      puts "${color1}#{entry}${color2}${alignr}Unstaged changes detected"
+      puts "${color1}#{entry}${color2}${alignr}Unstaged changes"
     end
 
     # Check for staged changes
     staged_changes, _stderr, _status = Open3.capture3('git diff --cached --stat')
     if !staged_changes.strip.empty?
       changes_detected = true
-      puts "${color1}#{entry}${color2}${alignr}Staged changes detected"
+      puts "${color1}#{entry}${color2}${alignr}Staged changes"
     end
 
     # Check for changes not pushed to remote
@@ -58,7 +58,7 @@ directories.each do |entry|
     if remote.strip.empty?
       # puts "  - No remote branch configured."
       changes_detected = true
-      puts "${color1}#{entry}${color2}${alignr}No remote branch configured"
+      puts "${color1}#{entry}${color2}${alignr}No remote"
     elsif local.strip == remote.strip 
       # puts "  - All changes pushed to remote."
       # no-op
@@ -66,7 +66,7 @@ directories.each do |entry|
     elsif local.strip == base.strip
       # puts "  - Changes need to be pulled from remote."
       changes_detected = true
-      puts "${color1}#{entry}${color2}${alignr}Pull needed"
+      puts "${color1}#{entry}${color2}${alignr}Behind master"
     elsif remote.strip == base.strip
       # puts "  - Changes need to be pushed to remote."
       changes_detected = true
