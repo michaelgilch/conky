@@ -128,8 +128,8 @@ max_lengths = combined_updates.map { |pkg| [pkg[0].length, pkg[1].length, pkg[2]
 
 # Display the Pacman Repo header into
 display_header("Pacman")
-display_line("Installed", num_installed, "Total Updates", packages.size)
-display_line("Cache Size", cache_size, "Explicitly Installed", explicit_packages.size)
+display_line("Installed", num_installed, "Updates", packages.size)
+display_line("Cache Size", cache_size, "Explicit", explicit_packages.size)
 
 # Display Pacman updates
 display_blank_line
