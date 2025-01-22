@@ -43,13 +43,4 @@ function module.get_resolution()
     return resolution
 end
 
--- Default settings
-module.defaults = {
-    GAP_X = 25,
-    GAP_Y = 50,
-    MINIMUM_WIDTH = 300,
-    MAXIMUM_WIDTH = 300,
-    FONT = 'Hack:size=8'
-}
-
 return module
