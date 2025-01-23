@@ -170,10 +170,10 @@ end
 def display_network()
 	external_ip = `curl icanhazip.com`
 
-	puts "${if_up enp5s0}${color1}LAN: ${color2}${addr enp5s0}${alignr}${color1}WAN:  ${color2}#{external_ip}"
+	puts "${if_up wlan0}${color1}LAN: ${color2}${addr wlan0}${alignr}${color1}WAN:  ${color2}#{external_ip}"
 	puts ''
-	puts '${color1}Down Speed:  ${color2}${downspeed enp5s0}${goto 175}${color1}Total Down: ${alignr}${color2}${totaldown enp5s0}'
-	puts '${color1}Up Speed:    ${color2}${upspeed enp5s0}${goto 175}${color1}Total Up: ${alignr}${color2}${totalup enp5s0}'
+	puts '${color1}Down Speed:  ${color2}${downspeed wlan0}${goto 250}${color1}Total Down: ${alignr}${color2}${totaldown wlan0}'
+	puts '${color1}Up Speed:    ${color2}${upspeed wlan0}${goto 250}${color1}Total Up: ${alignr}${color2}${totalup wlan0}'
 	puts '${endif}'
 end
 
@@ -220,7 +220,7 @@ def display_storage_devices()
 	    if mount.start_with?('/run/media/')
 	        removable_devices += make_partition_line(device)
 	    else
-	        block = fs[5..7]
+	        block = fs[5..11]
 	        unless block_devices.include?(block)
 	            block_devices.insert(-1, block)
 	            model = `lsblk -io KNAME,MODEL | grep "^#{block} "`.split('   ').to_a[1].strip
@@ -248,7 +248,7 @@ display_load_and_temp
 display_blank_line
 if HOSTNAME == "davinci"
     display_cores
-elsif HOSTNAME = "galileo"
+elsif HOSTNAME == "galileo"
     display_p_cores
     display_blank_line
     display_e_cores
