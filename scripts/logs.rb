@@ -76,7 +76,7 @@ def format_message()
 
     $formatted_message += color
     messageArr.each do | word |
-        if lineLength + word.length > 135
+        if lineLength + word.length > 120
             $formatted_message += "\n                    " + word + ' '
             lineLength = 20
         else
@@ -88,8 +88,8 @@ def format_message()
 end
 
 journalctl = 'journalctl --boot'
-priorityArg = '--priority=7'
-numLines = '--lines=50'
+priorityArg = '--priority=5'
+numLines = '--lines=20'
 output = '--output=verbose' # Need PRIORITY for color-coding
 fields = '--output-fields=_COMM,SYSLOG_IDENTIFIER,PRIORITY,_PID,MESSAGE'
 # journalctl -b -p7 -n10 -overbose --output-fields=_COMM,SYSLOG_IDENTIFIER,PRIORITY,_PID,MESSAGE
