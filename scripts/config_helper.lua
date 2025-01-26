@@ -40,6 +40,21 @@ function module.get_resolution()
     return resolution
 end
 
+-- merge_tables(t1, t2)
+-- Helper function to merge two tables, adding and overwriting
+-- entries in t1 with those from t2. 
+-- @return Single merged table
+function module.merge_tables(t1, t2)
+    local merged = {}
+    for k, v in pairs(t1) do
+        merged[k] = v
+    end
+    for k, v in pairs(t2) do
+        merged[k] = v
+    end
+    return merged
+end
+
 module.globals = {
     BACKGROUND = false,
     USE_XFT = true,
