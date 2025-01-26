@@ -76,7 +76,7 @@ def format_message()
 
     $formatted_message += color
     messageArr.each do | word |
-        if lineLength + word.length > 120
+        if lineLength + word.length > 150
             $formatted_message += "\n                    " + word + ' '
             lineLength = 20
         else
