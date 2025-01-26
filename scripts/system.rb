@@ -39,11 +39,11 @@ end
 # ---------------------
 
 def display_os()
-    spacing=100
+    spacing="${goto 100}"
     if HOSTNAME == "davinci"
         spacing = "${goto 150}"
     elsif HOSTNAME == "galileo"
-        spacing = "${goto 200}"
+        spacing = "${goto 150}"
     end 
 
 	puts "${color1}#{spacing}Kernel:  ${color2}${alignr}${kernel}"
@@ -107,7 +107,7 @@ def display_p_cores()
     puts "${color0}P-Cores"
     for i in (0..7).step(2)
         puts "   ${color2}${cpu cpu#{i}}% ${goto 75}${color6}${cpubar cpu#{i} 10,125}" \
-             "${goto 250}   ${color2}${cpu cpu#{i+1}}% ${goto 325}${color6}${cpubar cpu#{i+1} 10,125}"
+             "${goto 225}   ${color2}${cpu cpu#{i+1}}% ${goto 300}${color6}${cpubar cpu#{i+1} 10,125}"
     end
 end
 
@@ -115,7 +115,7 @@ def display_e_cores()
     puts "${color0}E-Cores"
     for i in (8..15).step(2)
         puts "   ${color2}${cpu cpu#{i}}% ${goto 75}${color6}${cpubar cpu#{i} 10,125}" \
-             "${goto 250}   ${color2}${cpu cpu#{i+1}}% ${goto 325}${color6}${cpubar cpu#{i+1} 10,125}"
+             "${goto 225}   ${color2}${cpu cpu#{i+1}}% ${goto 300}${color6}${cpubar cpu#{i+1} 10,125}"
     end
 end
 
