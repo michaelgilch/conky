@@ -55,4 +55,10 @@ function module.merge_tables(t1, t2)
     return merged
 end
 
+function module.print_merged_config_table(t)
+    for k, v in pairs(t) do
+        print(k, v)
+    end
+end
+
 return module
