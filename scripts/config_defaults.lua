@@ -15,7 +15,7 @@ config.defaults = {
 	alignment = top_left,  			-- Align Conky on screen (top_left, top_right, etc.)
 	-- append_file  						-- Append text/file to Conky's output (no default)
 	-- background = true,  				-- If true, Conky forks to background
-	border_inner_margin = 5,  	-- Gap between text and inside border
+	border_inner_margin = 0,  	-- Gap between text and inside border
 	-- border_outer_margin = 0,  	-- Gap between border and screen edge
 	border_width = 0,  				-- Width of the Conky window border
   color0 = 'FFFFFF', 	-- white    (Headings)
@@ -38,8 +38,8 @@ config.defaults = {
 	default_gauge_width = 40,  	-- Default width of gauge widgets
 	default_graph_height = 25,  -- Default height of graph widgets
 	default_graph_width = 0,  	-- Default width of graph widgets (0 = auto)
-	default_outline_color = #000000,  -- Default outline color (hex)
-	default_shade_color = #000000,  -- Default shading (shadow) color (hex)
+	default_outline_color = '#000000',  -- Default outline color (hex)
+	default_shade_color = '#000000',  -- Default shading (shadow) color (hex)
 	disable_auto_reload = false,  -- If true, disables auto-reload on config change
 	diskio_avg_samples = 2,  -- Number of samples to average disk I/O
 	double_buffer = true,  -- Use double buffering to reduce flicker
@@ -48,7 +48,7 @@ config.defaults = {
 	draw_outline = false,  -- Draw outline around text
 	draw_shades = true,  -- Draw shaded (shadow) text
 	extra_newline = false,  -- Add extra newline at the end of output
-	font = Monospace,  -- Default font when not using Xft
+	font = 'Monospace',  -- Default font when not using Xft
 	format_human_readable = false,  -- If true, show sizes as KiB, MiB, etc.
 	gap_x = 10,  -- Horizontal gap from alignment reference
 	gap_y = 10,  -- Vertical gap from alignment reference
@@ -87,12 +87,12 @@ config.defaults = {
 	own_window = true,  -- Create its own window
 	own_window_argb_value = 0,  -- ARGB alpha (0–255)
 	own_window_argb_visual = false,  -- Use ARGB for real transparency
-	own_window_class = Conky,  -- Window class name
-	own_window_colour = black,  -- Window background color
+	own_window_class = 'Conky',  -- Window class name
+	own_window_colour = 'black',  -- Window background color
 	-- own_window_hints  -- Additional hints (undecorated, sticky, etc.)
-	own_window_title = conky,  -- Window title
-	own_window_transparent = false,  -- Pseudo transparency
-	own_window_type = normal,  -- Window type (normal, desktop, dock, etc.)
+	own_window_title = 'conky',  -- Window title
+	own_window_transparent = true,  -- Pseudo transparency
+	own_window_type = 'desktop',  -- Window type (normal, desktop, dock, etc.)
 	pad_percents = 2,  -- Spacing for percentage values
 	short_units = false,  -- Use short version of units (KiB->K, etc.)
 	show_graph_range = false,  -- Display min/max values on graphs
@@ -116,7 +116,7 @@ config.defaults = {
 	vsync = false,  -- Enable vsync to reduce tearing
 	-- workspaces  -- List of X workspaces for Conky to display
 	xftalpha = 1,  -- Alpha for Xft fonts (1 = opaque)
-	xftfont = DejaVu Sans Mono:size=10,  -- Default Xft font
+	xftfont = 'DejaVu Sans Mono:size=10',  -- Default Xft font
 	-- xinerama_head  -- Xinerama monitor index
 }
 

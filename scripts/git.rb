@@ -13,6 +13,7 @@ root_dir = ARGV[0] || Dir.pwd
 
 changes_detected = false
 
+puts "${color0}Git  ${hr}"
 puts ""
 
 # Fetch and sort the directories
