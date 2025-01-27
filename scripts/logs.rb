@@ -8,6 +8,8 @@
 
 require 'date'
 
+puts "${color0}Journal  ${hr}"
+
 # The following globals hold the results of each journal entry
 $formatted_date
 $formatted_time
