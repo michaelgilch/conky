@@ -52,8 +52,8 @@ config.defaults = {
 	format_human_readable = false,  -- If true, show sizes as KiB, MiB, etc.
 	gap_x = 10,  -- Horizontal gap from alignment reference
 	gap_y = 10,  -- Vertical gap from alignment reference
-	hddtemp_host = localhost,  -- Host for hddtemp
-	hddtemp_port = 7634,  -- Port for hddtemp
+	-- hddtemp_host = localhost,  -- Host for hddtemp
+	-- hddtemp_port = 7634,  -- Port for hddtemp
 	-- http_proxy  -- Proxy setting (e.g., http://user:pass@host:port/)
 	imlib_cache_flush_interval = 300,  -- Seconds between Imlib2 cache flushes
 	imlib_cache_size = 4,  -- Imlib2 cache size in MB
@@ -64,7 +64,7 @@ config.defaults = {
 	max_port_monitor_connections = 256,  -- Max connections shown per port
 	-- max_special_text_width  -- Special limit on text width (no default)
 	max_text_width = 0,  -- Max text width in pixels (0 = unlimited)
-	maximum_height = 0,  -- Max window height in pixels (0 = none)
+	-- maximum_height = 0,  -- Max window height in pixels (0 = none)
 	maximum_width = 0,  -- Max window width in pixels (0 = none)
 	minimum_height = 0,  -- Min window height
 	minimum_width = 0,  -- Min window width
@@ -74,7 +74,7 @@ config.defaults = {
 	-- mpd_password   -- MPD server password
 	mpd_port = 6600,  -- MPD server port
 	-- mpd_retry_interval  -- Seconds between MPD reconnection attempts
-	mpd_update_interval = 2,  -- Interval (secs) to update MPD stats
+	-- mpd_update_interval = 2,  -- Interval (secs) to update MPD stats
 	music_player_interval = 5,  -- Interval (secs) for other music players
 	net_avg_samples = 2,  -- Number of samples to average net stats
 	no_buffers = true,  -- Subtract buffers from used memory
@@ -113,10 +113,10 @@ config.defaults = {
 	uppercase = false,  -- Convert text to uppercase
 	use_spacer = none,  -- Add spaces to align text (none, left, or right)
 	use_xft = true,  -- Use Xft (anti-aliased fonts)
-	vsync = false,  -- Enable vsync to reduce tearing
+	-- vsync = false,  -- Enable vsync to reduce tearing
 	-- workspaces  -- List of X workspaces for Conky to display
 	xftalpha = 1,  -- Alpha for Xft fonts (1 = opaque)
-	xftfont = 'DejaVu Sans Mono:size=10',  -- Default Xft font
+	-- xftfont = 'DejaVu Sans Mono:size=10',  -- Default Xft font
 	-- xinerama_head  -- Xinerama monitor index
 }
 
